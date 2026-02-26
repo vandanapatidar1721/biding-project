@@ -16,6 +16,9 @@ async function request<T>(
   const { skipAuth, ...fetchOptions } = options;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    // ngrok free tunnels sometimes inject a browser warning HTML page.
+    // This header bypasses the warning so API calls consistently return JSON.
+    ...(API_BASE.includes("ngrok") ? { "ngrok-skip-browser-warning": "true" } : {}),
     ...((fetchOptions.headers as Record<string, string>) || {}),
   };
   const token = getToken();
