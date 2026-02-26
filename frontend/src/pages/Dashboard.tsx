@@ -19,7 +19,8 @@ const Dashboard = () => {
   const { data: auctions = [], isLoading, isError, error } = useQuery({
     queryKey: ["auctions"],
     queryFn: async () => {
-      const list = await api.get<ApiAuction[]>("/api/auctions");
+      const raw = await api.get<unknown>("/api/auctions");
+      const list = Array.isArray(raw) ? (raw as ApiAuction[]) : [];
       return list.map(mapApiAuctionToAuction);
     },
   });

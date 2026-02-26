@@ -26,7 +26,6 @@ import type { ApiAuction } from "@/types/auction";
 
 const AdminPage = () => {
   const queryClient = useQueryClient();
-  const user = getCurrentUser();
   const [createOpen, setCreateOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -37,7 +36,10 @@ const AdminPage = () => {
 
   const { data: list = [], isLoading } = useQuery({
     queryKey: ["auctions"],
-    queryFn: () => api.get<ApiAuction[]>("/api/auctions"),
+    queryFn: async () => {
+      const raw = await api.get<unknown>("/api/auctions");
+      return Array.isArray(raw) ? (raw as ApiAuction[]) : [];
+    },
   });
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -98,21 +100,7 @@ const AdminPage = () => {
     }
   };
 
-  if (user && !isAdmin()) {
-    return (
-      <div className="min-h-screen pt-20 pb-12 flex items-center justify-center">
-        <p className="text-muted-foreground">Only admins can access this page.</p>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen pt-20 pb-12 flex items-center justify-center">
-        <p className="text-muted-foreground">Please log in as an admin.</p>
-      </div>
-    );
-  }
+  const user = getCurrentUser();
 
   return (
     <div className="min-h-screen pt-20 pb-12">
@@ -124,7 +112,9 @@ const AdminPage = () => {
         >
           <div>
             <h1 className="font-display text-3xl font-bold text-foreground">Admin</h1>
-            <p className="text-muted-foreground">Create and manage auctions</p>
+            <p className="text-muted-foreground">
+              Create and manage auctions{user ? ` (signed in as ${user.email})` : ""}
+            </p>
           </div>
           <Button onClick={() => setCreateOpen(true)} className="gap-2">
             <Plus className="h-4 w-4" />
