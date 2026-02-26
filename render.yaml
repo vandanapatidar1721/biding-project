@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: biding-project
+    env: docker
+    branch: main
+    dockerfilePath: backend/Dockerfile
