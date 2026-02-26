@@ -1,0 +1,148 @@
+openapi: 3.0.3
+info:
+  title: Real-time Auction API
+  version: 1.0.0
+  description: >
+    Backend API for a real-time auction system with JWT-based authentication,
+    RBAC, transactional bidding, and WebSocket updates.
+servers:
+  - url: http://localhost:4000
+paths:
+  /api/auth/signup:
+    post:
+      summary: Sign up a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [ADMIN, DEALER]
+      responses:
+        '201':
+          description: User created
+  /api/auth/login:
+    post:
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Authenticated
+  /api/auctions:
+    get:
+      summary: List auctions
+      responses:
+        '200':
+          description: List of auctions
+    post:
+      summary: Create auction (ADMIN)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                starting_price:
+                  type: number
+                end_time:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: Auction created
+  /api/auctions/{id}:
+    get:
+      summary: Get auction by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Auction data
+  /api/auctions/{id}/start:
+    post:
+      summary: Start auction (ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Auction started
+  /api/auctions/{id}/close:
+    post:
+      summary: Close auction (ADMIN)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Auction closed
+  /api/auctions/{id}/bids:
+    post:
+      summary: Place bid (DEALER)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                amount:
+                  type: number
+                idempotencyKey:
+                  type: string
+      responses:
+        '201':
+          description: Bid accepted
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
