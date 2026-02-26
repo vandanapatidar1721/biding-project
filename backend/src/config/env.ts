@@ -4,12 +4,6 @@ dotenv.config();
 
 export type UserRole = 'ADMIN' | 'DEALER';
 
-export const env = {
-  port: parseInt(process.env.PORT || '4000', 10),
-  jwtSecret: process.env.JWT_SECRET || 'dev_jwt_secret_change_me',
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1h',
-};
-
 // required env vars -----------------------------------------------------------
 if (!process.env.DATABASE_URL) {
   throw new Error('Missing required environment variable DATABASE_URL');
