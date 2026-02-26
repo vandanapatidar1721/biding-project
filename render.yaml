@@ -4,3 +4,9 @@ services:
     env: docker
     branch: main
     dockerfilePath: backend/Dockerfile
+    # render will use DATABASE_URL and REDIS_URL from environment
+    envVars:
+      - key: DATABASE_URL
+        value: "mysql://root:54321@localhost:3306/auction_db"  # replace with your MySQL URL or leave blank and set via Dashboard
+      - key: REDIS_URL
+        value: "redis://localhost:6379"  # replace with your Redis URL

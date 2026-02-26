@@ -61,10 +61,12 @@ Below are two simple options. Option A is usually the fastest.
 1. Go to [render.com](https://render.com) and sign in.
 2. **New** → **Web Service** → connect your GitHub repo.
 3. Settings:
-   - **Root Directory:** `backend`
-   - **Runtime:** Node
-   - **Build Command:** `npm install && npm run build`
-   - **Start Command:** `npm start`
+   - **Root Directory:** `backend` (or leave blank if you added a root `Dockerfile`).
+   - **Runtime:** Node (ignored when using Docker).
+   - **Build Command:** `npm install && npm run build` (ignored with Docker).
+   - **Start Command:** `npm start` (ignored with Docker).
+   - **Dockerfile Path:** `backend/Dockerfile` or just use the root `Dockerfile` we added.
+   > **Tip:** We provide both a `backend/Dockerfile` and a root `Dockerfile` in this repo. The root one copies the backend subfolder; Render will automatically use the root Dockerfile when present. You can also keep a `render.yaml` with `dockerfilePath: backend/Dockerfile`.
 4. Add **MySQL** and **Redis**:
    - Use **Render** add-ons if available, or use external services:
      - **MySQL:** e.g. [PlanetScale](https://planetscale.com) (free tier) or [Railway MySQL](https://railway.app).
@@ -73,6 +75,8 @@ Below are two simple options. Option A is usually the fastest.
    - `DATABASE_URL` = your MySQL connection string
    - `REDIS_URL` = your Redis URL
    - `JWT_SECRET` = long random string
+   - (optional) `PORT` is set by Render automatically
+   > **Important:** Without a valid `DATABASE_URL`, the server defaults to `mysql://localhost:3306/…` which doesn’t exist on Render and causes `ECONNREFUSED` errors.
 6. Deploy and copy the service URL (e.g. `https://your-backend.onrender.com`).
 
 ### 2. Frontend on Netlify
